@@ -4,7 +4,7 @@
 		module="akka-learning$sources_2.10"
 		revision="1.0"
 		status="integration"
-		publication="20170310150504"
+		publication="20170310151037"
 	/>
 	<configurations>
 		<conf name="default" visibility="public" description=""/>
