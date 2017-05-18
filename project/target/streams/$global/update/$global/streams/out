@@ -6074,7 +6074,7 @@
 [debug] 	[NOT REQUIRED] org.scala-sbt#template-resolver;0.1!template-resolver.jar
 [debug] 	[NOT REQUIRED] org.scala-lang#jline;2.10.6!jline.jar
 [debug] 	[NOT REQUIRED] org.fusesource.jansi#jansi;1.4!jansi.jar
-[debug] :: resolution report :: resolve 885ms :: artifacts dl 16ms
+[debug] :: resolution report :: resolve 925ms :: artifacts dl 26ms
 [debug] 	report for default#akka-learning-build;0.1-SNAPSHOT compile produced in /home/aamir/akka-learning/project/target/resolution-cache/reports/default-akka-learning-build-compile.xml
 [debug] 	report for default#akka-learning-build;0.1-SNAPSHOT runtime produced in /home/aamir/akka-learning/project/target/resolution-cache/reports/default-akka-learning-build-runtime.xml
 [debug] 	report for default#akka-learning-build;0.1-SNAPSHOT test produced in /home/aamir/akka-learning/project/target/resolution-cache/reports/default-akka-learning-build-test.xml
@@ -6088,5 +6088,5 @@
 [debug] 	report for default#akka-learning-build;0.1-SNAPSHOT docs produced in /home/aamir/akka-learning/project/target/resolution-cache/reports/default-akka-learning-build-docs.xml
 [debug] 	report for default#akka-learning-build;0.1-SNAPSHOT pom produced in /home/aamir/akka-learning/project/target/resolution-cache/reports/default-akka-learning-build-pom.xml
 [debug] 	report for default#akka-learning-build;0.1-SNAPSHOT scala-tool produced in /home/aamir/akka-learning/project/target/resolution-cache/reports/default-akka-learning-build-scala-tool.xml
-[debug] 	resolve done (885ms resolve - 16ms download)
+[debug] 	resolve done (925ms resolve - 26ms download)
 [info] Done updating.
