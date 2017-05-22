@@ -9,3 +9,4 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" % "akka-http_2.11" % "10.0.0"
 
 )
+libraryDependencies += "org.scalafx" % "scalafx_2.11" % "8.0.102-R11"
