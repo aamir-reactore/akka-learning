@@ -5,9 +5,11 @@ import java.io.File
 import akka.pattern.ask
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.util.Timeout
+
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Success,Failure}
+import scala.concurrent.Future
+import scala.util.{Failure, Success}
 class StringCounter extends Actor {
   var count = 0
 
@@ -42,11 +44,13 @@ class FileProcessor extends Actor {
 object ReaderApp extends App {
 
   val system = ActorSystem("FileReader")
-  val actor = system.actorOf(Props(new FileProcessor), "actor")
+  val actor = system.actorOf(Props(new FileProcessor), "myActor")
 
+  println(s"actor path is ==> ${actor.path}")
+  println(s"actor path is ==> ${system.actorSelection("../myActor")}")
   val fileName = "/home/aamir/wordcount.txt"
   implicit val time = Timeout(1.seconds)
-  val futureRes = actor ? new File(fileName)
+  val futureRes: Future[Int] = (actor ? new File(fileName)).mapTo[Int]
 
   futureRes onComplete {
     case Success(result) => {
