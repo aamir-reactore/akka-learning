@@ -1,4 +1,5 @@
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import akka.actor.SupervisorStrategy.{Restart, Resume}
+import akka.actor.{Actor, ActorRef, ActorSelection, ActorSystem, OneForOneStrategy, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 
@@ -84,43 +85,100 @@ object HierarchyExample extends App {
 
   case object CreateChild
 
-  case object PrintSignal
+  case class PrintSignal(order:Int)
 
-  case object SignalChildren
+  case class SignalChildren(order: Int)
 
   class ParentActor extends Actor {
     private var childCount = 0
-    private val children = collection.mutable.Buffer[ActorRef]()
 
     def receive = {
       case CreateChild => {
-        children += context.actorOf(Props[ChildActor], s"child-$childCount")
+        context.actorOf(Props[ChildActor], s"child$childCount")
         childCount += 1
       }
-      case SignalChildren => {
-        println(s">>>>>>>>>>>buffersize = ${children.length}")
-        children.map(_ ! PrintSignal)
+      case SignalChildren(n) => {
+        context.children.map(_ ! PrintSignal(n))
       }
     }
   }
 
   class ChildActor extends Actor {
     def receive = {
-      case PrintSignal => println(self)
+      case PrintSignal(n) => println(s"$n $self")
     }
   }
 
   val system = ActorSystem("HierarchySystem")
   val actor = system.actorOf(Props[ParentActor], "Parent1")
-  actor ! CreateChild
-  actor ! SignalChildren
-  Thread.sleep(1000)
-  actor ! CreateChild
-  Thread.sleep(1000)
-  actor ! CreateChild
- actor ! CreateChild
-  actor ! SignalChildren
+  val actor2 = system.actorOf(Props[ParentActor], "Parent2")
 
+
+
+  actor ! CreateChild
+  actor ! SignalChildren(1)
+  actor ! CreateChild
+  actor ! CreateChild
+  actor ! SignalChildren(2)
+
+  actor2 ! CreateChild
+  val child0: ActorSelection = system.actorSelection("/user/Parent2/child0") /*akka://HierarchySystem (leave off if system same)*/
+  child0 ! PrintSignal(3)
+
+  Thread.sleep(4000)
   system.terminate()
 
+}
+
+object SupervisorStrategyExample extends App {
+
+  case object CreateChild
+  case class PrintSignal(order:Int)
+  case class SignalChildren(order: Int)
+  case class DivideNumbers(n:Int,d:Int)
+  case object BadStuff
+
+  class ParentActor extends Actor {
+    private var childCount = 0
+
+    def receive = {
+      case CreateChild => {
+        context.actorOf(Props[ChildActor], s"child$childCount")
+        childCount += 1
+      }
+      case SignalChildren(n) => {
+        context.children.map(_ ! PrintSignal(n))
+      }
+    }
+
+    override val supervisorStrategy = OneForOneStrategy(loggingEnabled = false) {
+      case _:ArithmeticException => Resume
+      case  _:Exception => Restart
+    }
+  }
+
+
+  class ChildActor extends Actor {
+    def receive = {
+      case PrintSignal(n) => println(s"$n $self")
+      case DivideNumbers(n,d) => println(n/d)
+      case BadStuff => throw new RuntimeException("Bad stuff happened")
+    }
+
+  }
+
+  val system = ActorSystem("SupervisorStrategySystem")
+  val actor = system.actorOf(Props[ParentActor], "Parent1")
+
+  actor ! CreateChild
+  actor ! CreateChild
+  val child0 = system.actorSelection("akka://SupervisorStrategySystem/user/Parent1/child0")
+
+  child0 ! DivideNumbers(4,2)
+  child0 ! DivideNumbers(4,0)
+  child0 ! DivideNumbers(8,2)
+  child0 ! BadStuff
+
+  Thread.sleep(1000)
+  system.terminate()
 }
