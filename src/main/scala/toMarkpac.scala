@@ -182,3 +182,4 @@ object SupervisorStrategyExample extends App {
   Thread.sleep(1000)
   system.terminate()
 }
+
